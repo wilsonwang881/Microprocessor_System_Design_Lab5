@@ -1,0 +1,8 @@
+obj-m	+=	hello.o
+
+# use relative directory to locate the compile tools for linux
+all:
+	make -C ../../lab4/linux-3.14 M=$(PWD) modules
+
+clean:
+	make -C ../../lab4/linux-3.14 M=$(PWD) clean
