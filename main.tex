@@ -189,7 +189,17 @@ Lab 5 teaches how to write, compile, load and unload Linux kernels on the ZYBO Z
         
         to check whether the micro-SD card has been properly mounted.
         
+        \item Run:
+        
+        \verb|cd /|
+        
+        \verb|umount /mnt|
+        
+        to unmount the micro-SD card.
+        
     \end{enumerate}
+    
+    \newpage
     
     \item The hello kernel:
     
@@ -236,15 +246,31 @@ Lab 5 teaches how to write, compile, load and unload Linux kernels on the ZYBO Z
         \caption{Some Linux commands related to kernel modules.}
         \end{table}
         
-        
-        
-        
-        
         to see the output when installing the hello module.
+        
+        \item Run:
+        
+        \verb|mkdir -p /lib/modules/`uname -r`|
+        
+        \verb|rmmod hello|
+        
+        to remove the \textbf{hello} module from Linux kernel. If the first line is not run, the user is unable to remove an installed module.
         
     \end{enumerate}
     
+    \item The multiply kernel:
     
+    \begin{enumerate}
+        
+        \item Create a new folder called \textbf{lab5b} with \textbf{modules} directory copied from the \textbf{lab5} folder.
+        
+        \item Create a \textbf{multiply.c} file with content listed in appendix \ref{appendix:sourcecode_multiply}.
+        
+        \item Change the content in \textbf{Makefile} to the one in appendix \ref{appendix:makefile_multiply}.
+        
+        \item Repeat steps for loading, check kernel message and unloading module.
+        
+    \end{enumerate}
     
 \end{enumerate}
 
@@ -252,11 +278,78 @@ Lab 5 teaches how to write, compile, load and unload Linux kernels on the ZYBO Z
 
 \part{Results}
 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{1.Load_Micro_SD_Card.png}
+    \caption{Mount micro-SD card.}
+\end{figure}
 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{2.Make_New_Dir.png}
+    \caption{Make a new directory \textbf{test} after the micro-SD card is mounted.}
+\end{figure}
+
+Note the time associated with directory \textbf{test} is the 1st of January, 1970. This time instant is the start time for Unix operating systems. Linux has the same start time, or time zero, as the Unix does.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{3.Unmount_Micro_SD_Card.png}
+    \caption{Unmount micro-SD card.}
+\end{figure}
+
+After the micro-SD card is unmounted, \verb|cd /mnt/| then \verb|ls -lae| or simply \verb|ls /mnt/| shows nothing related to the content in the micro-SD card saw early.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{4.Check_New_Dir.png}
+    \caption{Chech micro-SD card on CentOS workstation.}
+\end{figure}
+
+Checking on the CentOS workstation: the newly created \textbf{test} folder is found in the micro-SD card.
+
+\newpage
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=0.49\textwidth]{5.Load_Hello_Module.png}
+    \caption{Load the compiled \textbf{hello} module.}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+    \includegraphics[width=0.7\textwidth]{7.lsmod.png}
+    \caption{List the installed modules.}
+    \end{subfigure}
+    \begin{subfigure}[b]{\textwidth}
+    \includegraphics[width=0.8\textwidth]{6.Show_Kernel_Message.png}
+    \caption{Show the kernel message after loading the \textbf{hello} module.}
+    \end{subfigure}
+    \caption{Load, show kernel message and list modules.}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.2\textwidth]{8.rmmod.png}
+    \caption{Remove the \textbf{hello} module.}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{9.Multiplier.png}
+    \caption{Picocom output for loading the \textbf{multiply} kernel.}
+\end{figure}
 
 \newpage
 
 \part{Conclusion}
+
+Lab 5 teaches students how to code, compile and run kernel modules in an embedded Linux environment. Operations such as memory mapping is needed since the kernel memory space is separated from the program memory space, or from the hardware memory space, since in Linux, hardware is represented as files and hence has memory address associated with.
+
+A kernel module consists of at least two functions: one called at installing and the other called at removing time. Those functions need to deal with memory mapping or unmapping for releasing resources. 
+
+Compared with previous labs, this lab adds Linux as the interface between the C program and the hardware. Without Linux, it is possible to execute a C program directly, i.e. in a bare-metal way. With Linux, program has to interface with hardware through kernel modules such as device drivers. Pros and cons: an operating system is more flexible and brings more convenient features such as the file system but can cost extra power and hardware resource to run, may impair performance on the execution of the program.
+
+During the lab session, one TA kindly pointed out the significance of the time associated with the newly created folder being the 1st of January, 1970. It is used as the reference for operations that capture time instance. This number can be configured. However, after powering cycle the board, the configuration may be lost. If there is a battery to power the clock on the board, the clock configuration can remain and increment with real-world time lapse.
 
 \textbf{Q: Change thecurrent directory to `/mnt' using `cd' and examine the contents of the directory using `ls'. What do you see?}
 
@@ -265,16 +358,16 @@ A: The setting of the question is after the micro-SD card being unmounted. The o
 \textbf{Q: If prior to step 2.f, we accidentally reset the ZYBO Z7-10 board, what additional steps would be
 needed in step 2.g?}
 
-A: 
+A: Steps invloving mounting the micro-SD card to \verb|/mnt| need to be repeated.
 
 \textbf{Q: What is the mount point for the SD card on the CentOS machine?}
 
-A:
+A: The micro-SD card is mounted at \verb|/dev/mmcb1k0p1|.
 
 \textbf{Q: If we changed the name of our hello.c file, what would we have to change in the Makefile? Likewise, if in our Makefile, we specified the kernel directory from lab 4 rather than lab 5, what
 might be the consequences?}
 
-A: 
+A: The output object name ending with \textbf{.o} needs to be modified to the new name of the \textbf{.c} file. If the kernel directory is set to lab4, the compilation of the kernel module should carry on as it always does. I am using relative directories to point to the kernel directory from lab 4 on purpose because it takes forever to copy the kernel files from one directory to another and hence I simply skip copying files by instead editing the path pointing to the kernel directory. Possible consequences caused by poorly written Makefile may compile the kernel module and place the object file in other folders instead of the current working directory.
 
 \newpage
 
@@ -285,5 +378,13 @@ A:
 \section{Makefile for hello.c}
 \label{appendix:makefile_hello}
 \lstinputlisting[style={txt-style}]{Makefile_hello}
+
+\section{Makefile for multiply.c}
+\label{appendix:makefile_multiply}
+\lstinputlisting[style={txt-style}]{Makefile_multiply}
+
+\section{multiply.c}
+\label{appendix:sourcecode_multiply}
+\lstinputlisting[style={txt-style}]{multiply.c}
 
 \end{document}
